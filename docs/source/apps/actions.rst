@@ -96,7 +96,7 @@ In the end, we use ``ImageIO.write(sobel, "bmp", new File(filenamePrefix + "sobe
    final String timeNow = format.format(date);
    final String filenamePrefix = folder + File.separator + timeNow;
 
-   try {
+   try { 
      byte[] data = picture.getContent().getValue();
      BufferedImage rgb = byteArrToBufferedImage(data);
      BufferedImage gs = grayscale(rgb);
@@ -133,25 +133,31 @@ Therefore, our finished code for ``takePictureReceived`` looks as follows:
    final String timeNow = format.format(date);
    final String filenamePrefix = folder + File.separator + timeNow;
 
-   try {
-     byte[] data = picture.getContent().getValue();
-     BufferedImage rgb = byteArrToBufferedImage(data);
-     connector.reportActionExecutionProgress(true, 0, STAGE_IMG, TOTAL_STAGES,
-         actionInstanceObjId);
-     BufferedImage gs = grayscale(rgb);
-     connector.reportActionExecutionProgress(true, 0, STAGE_GS, TOTAL_STAGES,
-         actionInstanceObjId);
-     BufferedImage sobel = sobel(gs);
-     ImageIO.write(sobel, "bmp", new File(filenamePrefix + "sobel.bmp"));
-     connector.reportActionExecutionProgress(true, 0, STAGE_SOBEL, TOTAL_STAGES,
-         actionInstanceObjId);
-   } catch (MALException e) {
-     e.printStackTrace();
-   } catch (IOException e) {
-     e.printStackTrace();
-   } catch (NMFException e) {
-     e.printStackTrace();
-   }
+   try 
+    {
+      byte[] data = picture.getContent().getValue();
+      BufferedImage rgb = byteArrToBufferedImage(data);
+      BufferedImage outPic;
+      connector.reportActionExecutionProgress(true, 0, STAGE_IMG, TOTAL_STAGES,
+          actionInstanceObjId);
+      if (processSobel) {
+        BufferedImage gs = grayscale(rgb);
+        connector.reportActionExecutionProgress(true, 0, STAGE_GS, TOTAL_STAGES,
+            actionInstanceObjId);
+        outPic = sobel(gs);
+      } else {
+        outPic = rgb;
+      }
+      ImageIO.write(outPic, "bmp", new File(filenamePrefix + "sobel.bmp"));
+      connector.reportActionExecutionProgress(true, 0, STAGE_SOBEL, TOTAL_STAGES,
+          actionInstanceObjId);
+    } catch (MALException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    } catch (NMFException e) {
+      e.printStackTrace();
+    }
 
 Note that the catch blocks are auto-generated and should contain logging calls so you can trace down problems in your app. 
 Now that your first app is implemented, it is time to learn about :doc:`packaging`.
