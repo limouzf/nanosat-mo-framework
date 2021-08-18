@@ -87,26 +87,29 @@ In the end, we use ``ImageIO.write(sobel, "bmp", new File(filenamePrefix + "sobe
 .. code-block:: java
    :linenos:
 
-   final String folder = "snaps";
-   File dir = new File(folder);
-   dir.mkdirs();
+    final String folder = "snaps";
+    File dir = new File(folder);
+    dir.mkdirs();
 
-   Date date = new Date(System.currentTimeMillis());
-   Format format = new SimpleDateFormat("yyyyMMdd_HHmmss_");
-   final String timeNow = format.format(date);
-   final String filenamePrefix = folder + File.separator + timeNow;
-
-   try { 
-     byte[] data = picture.getContent().getValue();
-     BufferedImage rgb = byteArrToBufferedImage(data);
-     BufferedImage gs = grayscale(rgb);
-     BufferedImage sobel = sobel(gs);
-     ImageIO.write(sobel, "bmp", new File(filenamePrefix + "sobel.bmp"));
-   } catch (MALException e) {
-     e.printStackTrace();
-   } catch (IOException e) {
-     e.printStackTrace();
-   }
+    Date date = new Date(System.currentTimeMillis());
+    Format format = new SimpleDateFormat("yyyyMMdd_HHmmss_");
+    final String timeNow = format.format(date);
+    final String filenamePrefix = folder + File.separator + timeNow;
+    try 
+    {
+      byte[] data = picture.getContent().getValue();
+      BufferedImage rgb = byteArrToBufferedImage(data);
+      BufferedImage outPic;
+      ImageIO.write(outPic, "bmp", new File(filenamePrefix + "sobel.bmp"));
+      connector.reportActionExecutionProgress(true, 0, STAGE_SOBEL, TOTAL_STAGES,
+             actionInstanceObjId);
+    } catch (MALException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    } catch (NMFException e) {
+      e.printStackTrace();
+    }
 
 We have to catch some exceptions in between, so everything is surrounded by a try/catch-construction. 
 Now when we call the action ``takeSobel`` from our ground application (e.g. the CTT), a picture is taken, filtered and the result is stored on disk.
