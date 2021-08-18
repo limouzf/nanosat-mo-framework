@@ -14,10 +14,40 @@ to build our BufferedImage from the InputStream
 
 .. code-block:: java
    :linenos:
-   
-   public BufferedImage byteArrToBufferedImage(byte[] something) throws IOException {
-    InputStream is = new ByteArrayInputStream(something);
-    BufferedImage bi = ImageIO.read(is);
-    return bi;
+
+    public BufferedImage byteArrToBufferedImage(byte[] something) throws IOException {
+      InputStream is = new ByteArrayInputStream(something);
+      BufferedImage bi = ImageIO.read(is);
+      return bi;
+    }
+
+At the end, the action needs to return the BufferedImage in order to grayscale this latter.
+
+How to grayscale that image
+---------------------------
+
+.. code-block: java
+   :linenos:
+
+   public BufferedImage grayscale(BufferedImage inputimage) {
+    LOGGER.log(Level.INFO, "BeginGrayscale");
+    
+    BufferedImage grayscaleoutputimage = new BufferedImage(inputimage.getWidth(), inputimage.getHeight(), inputimage.getType());  
+    //Taking the last saved image (standart image) as an input
+    for (int i=0; i<inputimage.getHeight(); i++){
+      for (int j=0; j<inputimage.getWidth(); j++){
+        float r = new Color(inputimage.getRGB(j, i)).getRed();
+        float g = new Color(inputimage.getRGB(j, i)).getGreen();
+        float b = new Color(inputimage.getRGB(j, i)).getBlue();
+        int grayScaled = (int)(r+g+b)/3;
+        grayscaleoutputimage.setRGB(j, i, new Color(grayScaled, grayScaled, grayScaled).getRGB());
+      }
+    }
+    return grayscaleoutputimage;
    }
-  
+
+Application of Sobel Filter
+---------------------------
+
+
+
