@@ -1,0 +1,23 @@
+===========================
+Sobel Filter Implementation
+===========================
+As said in part "Action", to apply the sobel filter, three steps must be performed:
+
+.. contents:: Table of contents
+
+byteArrToBufferedImage
+----------------------
+First step is to convert the raw byte data into a **BufferedImage**. Our byte is here defined as ``something`` but can be seen as the ImageData.
+Then we have to make this ImageData a readable input for ``BufferedImage`` fonction. 
+The ByteArrayInputStream class of the java.io package can be used to read an array of input data (in bytes). And then all that left to do is 
+to build our BufferedImage from the InputStream
+
+.. code-block:: java
+   :linenos:
+   
+   public BufferedImage byteArrToBufferedImage(byte[] something) throws IOException {
+    InputStream is = new ByteArrayInputStream(something);
+    BufferedImage bi = ImageIO.read(is);
+    return bi;
+   }
+  
