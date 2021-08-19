@@ -21,7 +21,7 @@ to build our BufferedImage from the InputStream
       return bi;
     }
 
-At the end, the action needs to return the BufferedImage in order to grayscale this latter.
+At the end, the action needs to return the BufferedImage in order to grayscale it latter.
 
 How to grayscale that image?
 ---------------------------
@@ -46,6 +46,11 @@ Then for each pixels in the kernel, we are going to apply an RGB filter.
     return grayscaleoutputimage;
    }
 
+What about the result then? 
+Here is an exemple of what should appear on your screen:
+
+.. image:: _images/grayscalePicture.png
+      :width: 600
 
 Application of Sobel Filter
 ---------------------------
