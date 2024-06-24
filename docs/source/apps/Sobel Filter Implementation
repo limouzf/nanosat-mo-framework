@@ -1,0 +1,103 @@
+===========================
+Sobel Filter Implementation
+===========================
+As said in part "Action", to apply the sobel filter, three steps must be performed:
+
+.. contents:: Table of contents
+
+byteArrToBufferedImage
+----------------------
+First step is to convert the raw byte data into a **BufferedImage**. Our byte is here defined as ``something`` but can be seen as the ImageData.
+Then we have to make this ImageData a readable input for ``BufferedImage`` fonction. 
+The ByteArrayInputStream class of the java.io package can be used to read an array of input data (in bytes). And then all that left to do is 
+to build our BufferedImage from the InputStream
+
+.. code-block:: java
+   :linenos:
+
+    public BufferedImage byteArrToBufferedImage(byte[] something) throws IOException {
+      InputStream is = new ByteArrayInputStream(something);
+      BufferedImage bi = ImageIO.read(is);
+      return bi;
+    }
+
+At the end, the action needs to return the BufferedImage in order to grayscale it latter.
+
+How to grayscale that image?
+---------------------------
+As we already have an image which is saved and ready to be interpreted, we just have to use the function BufferedImage defined here: 
+``BufferedImage(int width, int height, int imageType)``. In our case, the image's size depends on the picture which has been taken (here inputimage).
+Then for each pixels in the kernel, we are going to apply an RGB filter. 
+
+.. code-block:: java
+   :linenos:
+
+   { 
+    BufferedImage grayscaleoutputimage = new BufferedImage(inputimage.getWidth(), inputimage.getHeight(), inputimage.getType());  
+    for (int i=0; i<inputimage.getHeight(); i++){
+     for (int j=0; j<inputimage.getWidth(); j++){
+       float r = new Color(inputimage.getRGB(j, i)).getRed();
+       float g = new Color(inputimage.getRGB(j, i)).getGreen();
+       float b = new Color(inputimage.getRGB(j, i)).getBlue();
+       int grayScaled = (int)(r+g+b)/3;
+       grayscaleoutputimage.setRGB(j, i, new Color(grayScaled, grayScaled, grayScaled).getRGB());
+      }
+    }
+    return grayscaleoutputimage;
+   }
+
+What about the result then? 
+Here is an exemple of what should appear on your screen:
+
+.. image:: _images/grayscalePicture.png
+      :width: 600
+
+Application of Sobel Filter
+---------------------------
+
+.. code-block:: java
+   :linenos:
+
+   BufferedImage sobelimage = new BufferedImage(inimage.getWidth(), inimage.getHeight(), inimage.getType());
+    //initialisation of the two kernel. 
+    float sobel_x[][] = {{-1, 0, 1}, 
+                         {-2, 0, 2}, 
+                         {-1, 0, 1}}; // X_direction detects horizontal edges
+    float sobel_y[][] = {{-1, -2, -1}, 
+                         {0,  0,  0}, 
+                         {1,  2,  1}}; // Y_direction detects vertical edges
+                            
+.. code-block:: java
+   :linenos:
+   
+    for(int y = 1; y < inimage.getHeight() -1; y++) {
+      for(int x = 1; x < inimage.getWidth() - 1; x++) {
+        double magX = 0.0; // magnitude (init a matrix 0.0 = empty matrix)
+        double magY = 0.0;
+        for(int a = 0; a < 3; a++)   {
+          for(int b = 0; b < 3; b++)  {            
+            int xn = x + a - 1;
+            int yn = y + b - 1;
+
+            magX += ((inimage.getRGB(xn,yn) & (0xFF))/255.f) * sobel_x[a][b];
+            magY += ((inimage.getRGB(xn,yn) & (0xFF))/255.f) * sobel_y[a][b];
+          }
+        }
+        
+.. code-block:: java
+   :linenos:
+
+     int val = (int)Math.sqrt((magX * magX) + (magY * magY));
+     val *= 255;
+
+     if(val < 0) {
+         val = 0;
+     }
+     if(val > 255) {
+         val = 255;
+     }
+     sobelimage.setRGB(x, y, new Color(val, val, val).getRGB());
+     }
+     }
+     return sobelimage;
+     }
